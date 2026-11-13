@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R.K. CLUB - Official Portal</title>
+    <!-- Official Jitsi Meet External API for Embedded Live Room & Host Controls -->
+    <script src="https://meet.jit.si/external_api.js"></script>
+    <style>
+        :root {
+            --primary: #EE4D2D;
+            --primary-dark: #D73211;
+            --accent: #FF7337;
+            --bg-cream: #FFF7F2;
+            --navy: #0A2558;
+            --gold: #F59E0B;
+            --text-dark: #1F2937;
+            --text-muted: #4B5563;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        body {
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+            padding-bottom: 80px;
+        }
+
+        /* Top Header with Official Logo Only & Fixed Full Menu Button */
+        .top-header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #ffffff;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 9999;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        .header-logo-box {
+            background: #ffffff;
+            padding: 4px 10px;
+            border-radius: 10px;
+            border: 2px solid var(--gold);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .header-logo-svg {
+            height: 42px;
+            width: 95px;
+            display: block;
+        }
+
+        /* Fixed Three-Dot Menu Button (Never cuts off text) */
+        .menu-container {
+            position: relative;
+            flex-shrink: 0;
+        }
+        .three-dot-btn {
+            background: #ffffff;
+            border: 2px solid var(--navy);
+            color: var(--navy);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 900;
+            font-size: 13px;
+            white-space: nowrap;
+            min-width: 82px;
+            justify-content: center;
+        }
+        .dots-icon {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .dots-icon span {
+            width: 4px;
+            height: 4px;
+            background-color: var(--navy);
+            border-radius: 50%;
+            display: block;
+        }
+        .dropdown-box {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 48px;
+            background: #ffffff;
+            width: 250px;
+            border-radius: 12px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+            border: 2px solid var(--primary);
+            z-index: 10000;
+            overflow: hidden;
+        }
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 13px 15px;
+            background: #ffffff;
+            border: none;
+            border-bottom: 1px solid #eeeeee;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+        .dropdown-item:hover {
+            background: #FFF0EB;
+            color: var(--primary);
+        }
+
+        /* Quick Navigation Bar */
+        .quick-nav {
+            display: flex;
+            overflow-x: auto;
+            gap: 6px;
+            background: #FFE6DC;
+            padding: 9px 10px;
+            border-bottom: 1px solid #FFD0BE;
+        }
+        .tab-btn {
+            background: #ffffff;
+            color: var(--navy);
+            border: 1.5px solid var(--primary);
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .tab-btn.active-tab {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        /* Pages Container */
+        .page-sec {
+            max-width: 720px;
+            margin: 14px auto;
+            padding: 0 12px;
+        }
+
+        /* Hero Logo Showcase Card */
+        .logo-showcase {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px 14px;
+            text-align: center;
+            border: 2px solid #FFCBB8;
+            box-shadow: 0 6px 18px rgba(238, 77, 45, 0.12);
+            margin-bottom: 16px;
+        }
+        .rk-hero-svg {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto 10px;
+            display: block;
+        }
+
+        /* Cards & Step Items */
+        .card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 3px 10px rgba(238, 77, 45, 0.08);
+            border: 1px solid #FFE2D6;
+        }
+        .section-banner {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: #ffffff;
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            background: #FFF9F6;
+            border: 1px solid #FFDCD0;
+            border-radius: 20px;
+            padding: 10px 13px;
+            margin-bottom: 10px;
+            gap: 12px;
+        }
+        .step-num {
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 800;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 13px;
+        }
+        .step-text h4 {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 800;
+        }
+        .step-text p {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            line-height: 1.45;
+        }
+
+        /* Stats & Prizes */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .stat-box {
+            background: #FFF5F0;
+            border: 1.5px solid #FFCBB8;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-box h3 {
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 900;
+        }
+        .stat-box p {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .prize-tier {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #FFF9F5;
+            border-left: 5px solid var(--primary);
+            border-top: 1px solid #FFE2D6;
+            border-right: 1px solid #FFE2D6;
+            border-bottom: 1px solid #FFE2D6;
+            padding: 11px 13px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        .prize-rank {
+            font-weight: 900;
+            font-size: 13.5px;
+            color: var(--navy);
+        }
+        .prize-amount {
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 900;
+            padding: 5px 11px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* Jitsi Live Studio Styling */
+        .live-studio-box {
+            background: #0F172A;
+            color: #ffffff;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 16px;
+            border: 2px solid #334155;
+        }
+        .live-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .live-badge {
+            background: #DC2626;
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 11.5px;
+            padding: 5px 11px;
+            border-radius: 20px;
+        }
+        .live-count-badge {
+            background: #1E293B;
+            border: 1px solid #38BDF8;
+            color: #38BDF8;
+            font-weight: 800;
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        #jitsiContainer {
+            width: 100%;
+            height: 360px;
+            background: #090D16;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .ctrl-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .ctrl-btn {
+            background: #1E293B;
+            border: 1.5px solid #475569;
+            color: #ffffff;
+            padding: 10px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            text-align: center;
+        }
+        .ctrl-btn.active-red {
+            background: #DC2626;
+            border-color: #ffffff;
+        }
+        .participant-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 8px;
+            border-bottom: 1px solid #E5E7EB;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .part-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+        .part-btn {
+            background: #F3F4F6;
+            border: 1px solid #D1D5DB;
+            color: #1F2937;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .part-btn.muted-state {
+            background: #DC2626;
+            color: #ffffff;
+            border-color: #991B1B;
+        }
+
+        /* Forms & Buttons */
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #222222;
+        }
+        input[type="text"], input[type="tel"], input[type="number"], input[type="password"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1.5px solid #CCCCCC;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #FAFAFA;
+        }
+        .btn-main {
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            font-size: 14.5px;
+            font-weight: 800;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 8px;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP HEADER WITH OFFICIAL R.K. CLUB LOGO ONLY & FULL MENU BUTTON -->
+<div class="top-header">
+    <div class="header-logo-box" onclick="goPage('home')">
+        <svg class="header-logo-svg" viewBox="0 0 380 185" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="155" cy="92" rx="105" ry="36" fill="none" stroke="#1E88E5" stroke-width="6" transform="rotate(-25 155 92)"/>
+            <ellipse cx="155" cy="92" rx="105" ry="36" fill="none" stroke="#1565C0" stroke-width="6" transform="rotate(28 155 92)"/>
+            <circle cx="70" cy="58" r="8" fill="#1E88E5"/>
+            <circle cx="62" cy="122" r="9" fill="#1565C0"/>
+            <circle cx="275" cy="115" r="8" fill="#1E88E5"/>
+            <polygon points="190,4 120,28 190,50 260,28" fill="#0D47A1"/>
+            <path d="M148,38 L148,58 Q190,72 232,58 L232,38" fill="#1565C0"/>
+            <line x1="238" y1="34" x2="242" y2="70" stroke="#FBC02D" stroke-width="5"/>
+            <circle cx="242" cy="73" r="5" fill="#FBC02D"/>
+            <text x="95" y="128" font-size="88" font-weight="900" fill="#0D47A1" font-family="Arial Black, sans-serif">R.K</text>
+            <path d="M122,82 L134,66 L142,72 L130,88 Z" fill="#ffffff"/>
+            <circle cx="128" cy="94" r="7" fill="none" stroke="#ffffff" stroke-width="3.5"/>
+            <rect x="115" y="101" width="24" height="4" fill="#ffffff"/>
+            <path d="M200,130 Q260,85 318,38" fill="none" stroke="#FBC02D" stroke-width="9" stroke-linecap="round"/>
+            <polygon points="340,18 306,32 325,52" fill="#0D47A1"/>
+            <path d="M85,138 Q138,126 190,141 Q242,126 295,138" fill="none" stroke="#07193F" stroke-width="5"/>
+            <rect x="25" y="145" width="330" height="36" rx="18" fill="#07193F" stroke="#F59E0B" stroke-width="4"/>
+            <text x="190" y="170" font-size="23" font-weight="900" fill="#ffffff" text-anchor="middle" font-family="Arial Black, sans-serif" letter-spacing="1.5">* R.K CLUB *</text>
+        </svg>
+    </div>
+
+    <div class="menu-container">
+        <button type="button" class="three-dot-btn" onclick="toggleDropdown()">
+            <span class="dots-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+            <span>MENU</span>
+        </button>
+        <div class="dropdown-box" id="topDropdown">
+            <button type="button" class="dropdown-item" onclick="goPage('home')">1. Explore & Dashboard</button>
+            <button type="button" class="dropdown-item" onclick="goPage('quiz')">2. Quiz Schedule & Prizes</button>
+            <button type="button" class="dropdown-item" onclick="goPage('live')">3. Jitsi Live Practical Room</button>
+            <button type="button" class="dropdown-item" onclick="goPage('rewards')">4. Rewards & R.K. Coins</button>
+            <button type="button" class="dropdown-item" onclick="goPage('register')">5. Member Registration</button>
+            <button type="button" class="dropdown-item" onclick="goPage('contact')">6. Contact & Support Desk</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOP QUICK TAB NAVIGATION -->
+<div class="quick-nav">
+    <button type="button" class="tab-btn active-tab" id="tab-home" onclick="goPage('home')">1. Explore & Dashboard</button>
+    <button type="button" class="tab-btn" id="tab-quiz" onclick="goPage('quiz')">2. Quiz & Prizes</button>
+    <button type="button" class="tab-btn" id="tab-live" onclick="goPage('live')">3. Live Session (Jitsi)</button>
+    <button type="button" class="tab-btn" id="tab-rewards" onclick="goPage('rewards')">4. R.K. Coins</button>
+    <button type="button" class="tab-btn" id="tab-register" onclick="goPage('register')">5. Register</button>
+    <button type="button" class="tab-btn" id="tab-contact" onclick="goPage('contact')">6. Contact</button>
+</div>
+
+<!-- ================= PAGE 1: HOME, EXPLORE, AIM & DASHBOARD (VISIBLE BY DEFAULT) ================= -->
+<div class="page-sec" id="sec-home" style="display:block;">
+    <div class="logo-showcase">
+        <!-- Enhanced Attractive Logo (Logo Only - Without Bottom Taglines as Requested) -->
+        <svg class="rk-hero-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="rkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#1E88E5"/>
+                    <stop offset="55%" stop-color="#0D47A1"/>
+                    <stop offset="100%" stop-color="#07193F"/>
+                </linearGradient>
+            </defs>
+            <ellipse cx="165" cy="96" rx="122" ry="42" fill="none" stroke="#29B6F6" stroke-width="5.5" transform="rotate(-24 165 96)"/>
+            <ellipse cx="165" cy="96" rx="122" ry="42" fill="none" stroke="#1565C0" stroke-width="5.5" transform="rotate(28 165 96)"/>
+            <circle cx="66" cy="56" r="9" fill="#29B6F6"/>
+            <circle cx="56" cy="132" r="10" fill="#1565C0"/>
+            <circle cx="298" cy="124" r="9" fill="#29B6F6"/>
+            <polygon points="195,4 115,31 195,56 275,31" fill="url(#rkGrad)"/>
+            <path d="M148,43 L148,66 Q195,82 242,66 L242,43" fill="#0D47A1"/>
+            <line x1="250" y1="38" x2="254" y2="78" stroke="#FFB300" stroke-width="5.5"/>
+            <circle cx="254" cy="81" r="5.5" fill="#FFB300"/>
+            <text x="95" y="138" font-size="96" font-weight="900" fill="url(#rkGrad)" font-family="Arial Black, sans-serif">R.K</text>
+            <path d="M126,86 L140,68 L149,75 L135,93 Z" fill="#ffffff"/>
+            <circle cx="133" cy="100" r="8" fill="none" stroke="#ffffff" stroke-width="4"/>
+            <rect x="118" y="108" width="28" height="4.5" rx="2" fill="#ffffff"/>
+            <path d="M206,142 Q272,92 336,38" fill="none" stroke="#FFB300" stroke-width="10" stroke-linecap="round"/>
+            <polygon points="360,15 322,32 344,54" fill="#0D47A1"/>
+            <circle cx="338" cy="36" r="4" fill="#ffffff"/>
+            <path d="M85,146 Q140,132 195,149 Q250,132 305,146" fill="none" stroke="#07193F" stroke-width="5.5"/>
+            <path d="M75,155 Q135,141 195,158 Q255,141 315,155" fill="none" stroke="#07193F" stroke-width="5.5"/>
+            <rect x="35" y="158" width="330" height="38" rx="19" fill="#07193F" stroke="#FFB300" stroke-width="3.5"/>
+            <text x="200" y="184" font-size="25" font-weight="900" fill="#ffffff" text-anchor="middle" font-family="Arial Black, sans-serif" letter-spacing="2">* R.K CLUB *</text>
+        </svg>
+
+        <p style="font-size:13.5px; color:#374151; margin-top:8px; line-height:1.55;">
+            Welcome to <strong>R.K. CLUB</strong> — An interactive 30-Day Science, Innovation, and Social Awareness Platform for students and youth across India.
+        </p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
+            <button type="button" class="btn-main" style="margin-top:0;" onclick="goPage('register')">NEW REGISTRATION</button>
+            <button type="button" class="btn-main" style="margin-top:0; background:#0A2558;" onclick="goPage('live')">JOIN LIVE SESSION</button>
+        </div>
+    </div>
+
+    <!-- Our Core Aim & Vision -->
+    <div class="card">
+        <div class="section-banner">Our Core Aim & Mission</div>
+        <div style="background:#FFF0EB; border-left:5px solid var(--primary); padding:14px; border-radius:8px;">
+            <h4 style="color:var(--primary-dark); font-size:15px; margin-bottom:6px;">
+                Social Awareness & Self-Funded Student Innovation
+            </h4>
+            <p style="font-size:13.5px; line-height:1.6; color:#1F2937;">
+                Our primary aim is to spread <strong>Social Awareness</strong> among students and society while helping youths who have a deep interest in <strong>Science and Technology</strong> move forward in life. We organize grand quizzes and award major prizes specifically so that winners who want to create a <strong>new invention, science project, or innovation never have to ask their parents or anyone else for money</strong>—they
